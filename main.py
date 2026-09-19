@@ -682,6 +682,7 @@ class BoomBox(QWidget):
         self.player.mediaStatusChanged.connect(self._on_media_status)
         self.player.errorOccurred.connect(self._on_error)
 
+        self.setMinimumSize(self._normal_page.minimumSizeHint())
         self.adjustSize()
 
     def _wire_drops(self, widget):
@@ -712,6 +713,7 @@ class BoomBox(QWidget):
 
     def _go_compact(self):
         self._normal_geometry = self.geometry()
+        self.setMinimumSize(self._compact_page.minimumSizeHint())
         self._stack.setCurrentWidget(self._compact_page)
         self.setWindowTitle("BOOMNOXX · MINI")
         d = self._frame_delta()
@@ -721,6 +723,7 @@ class BoomBox(QWidget):
         )
 
     def _go_normal(self):
+        self.setMinimumSize(self._normal_page.minimumSizeHint())
         self._stack.setCurrentWidget(self._normal_page)
         self.setWindowTitle("BOOMNOXX")
         if getattr(self, "_normal_geometry", None):
