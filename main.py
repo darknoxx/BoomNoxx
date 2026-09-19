@@ -77,6 +77,12 @@ QLabel#hint {
     font-size: 11px;
     letter-spacing: 2px;
 }
+QLabel#plcount {
+    color: #8a8a8a;
+    font-size: 11px;
+    letter-spacing: 2px;
+    background: transparent;
+}
 QLabel#tape {
     color: #f2f2f2;
     font-size: 12px;
@@ -450,6 +456,52 @@ class EjectButton(QPushButton):
         pxfill(p, cx - 5, base + 4, 11, 2, col)
 
 
+class PixelCloseButton(QPushButton):
+    """Kleiner X-Button (gezeichnetes Pixel-Kreuz) zum Leeren der Trackliste."""
+
+    def __init__(self, handler, parent=None):
+        super().__init__(parent)
+        self.clicked.connect(handler)
+        self.setFixedSize(26, 22)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._hover = False
+
+    def enterEvent(self, e):
+        self._hover = True
+        self.update()
+        return super().enterEvent(e)
+
+    def leaveEvent(self, e):
+        self._hover = False
+        self.update()
+        return super().leaveEvent(e)
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        try:
+            p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+            if not self.isEnabled():
+                pxfill(p, 0, 0, self.width(), self.height(), QColor("#000000"))
+                col = DIM
+            else:
+                pressed = self.isDown()
+                if pressed:
+                    pxfill(p, 0, 0, self.width(), self.height(), FG)
+                    col = QColor("#000000")
+                else:
+                    pxfill(p, 0, 0, self.width(), self.height(),
+                           QColor("#1a1a1a") if self._hover else QColor("#000000"))
+                    col = FG
+            p.setPen(LINE if self._hover else SOFT)
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            p.drawRect(0, 0, self.width() - 1, self.height() - 1)
+            cx, cy = self.width() // 2, self.height() // 2
+            pixel_line(p, cx - 5, cy - 4, cx + 5, cy + 4, col, step=1, size=2)
+            pixel_line(p, cx - 5, cy + 4, cx + 5, cy - 4, col, step=1, size=2)
+        finally:
+            p.end()
+
+
 class ReelWidget(QWidget):
     """Pixelart-Kassettenspule."""
 
@@ -618,6 +670,17 @@ class BoomBox(QWidget):
         self.brand = PixelBrand()
         nl.addWidget(self.brand, 0)
 
+        plhead = QHBoxLayout()
+        plhead.setSpacing(8)
+        self.playlist_count = QLabel("PLAYLIST · 0")
+        self.playlist_count.setObjectName("plcount")
+        self.btn_clear = PixelCloseButton(self._clear_playlist)
+        self.btn_clear.setEnabled(False)
+        plhead.addWidget(self.playlist_count)
+        plhead.addStretch(1)
+        plhead.addWidget(self.btn_clear, 0, Qt.AlignmentFlag.AlignVCenter)
+        nl.addLayout(plhead)
+
         self.playlist = PlaylistWidget()
         self.playlist.files_dropped.connect(self.add_files)
         self.playlist.itemDoubleClicked.connect(self._play_from_list)
@@ -779,6 +842,24 @@ class BoomBox(QWidget):
         self.resize(self.minimumWidth(), self.minimumHeight())
 
     # ---------- Playlist / Audio ----------
+    def _update_playlist_info(self):
+        n = self.playlist.count()
+        self.playlist_count.setText(f"PLAYLIST · {n}")
+        self.btn_clear.setEnabled(n > 0)
+
+    def _clear_playlist(self):
+        self.playlist.clear()
+        self.player.stop()
+        self.reel_left.speed = 0.0
+        self.reel_right.speed = 0.0
+        self.reel_mini_left.speed = 0.0
+        self.reel_mini_right.speed = 0.0
+        self.btn_play.setText("PLAY")
+        self.btn_mini_play.setText("PLAY")
+        self.led.set_info(title="INSERT TAPE ", playing=False)
+        self.mini_led.set_info(title="INSERT TAPE ", playing=False)
+        self._update_playlist_info()
+
     def add_files(self, paths):
         have = {self.playlist.item(i).data(Qt.ItemDataRole.UserRole)
                 for i in range(self.playlist.count())}
@@ -795,6 +876,7 @@ class BoomBox(QWidget):
             added = True
         if added and self.player.playbackState() == QMediaPlayer.PlaybackState.StoppedState:
             self._play_from_list(self.playlist.item(0))
+        self._update_playlist_info()
 
     def _play_from_list(self, item):
         if item is None:
