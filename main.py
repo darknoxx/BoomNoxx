@@ -21,189 +21,101 @@ from PySide6.QtWidgets import (
 
 AUDIO_EXTENSIONS = {".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac"}
 
-# --- Themes ---
-THEMES = {
-    "arcade": {
-        "bg": "#0e0b16", "panel": "#131022", "panel2": "#171529",
-        "text": "#e8e4ff", "border": "#6d5bd0", "dim": "#2c2840",
-        "hint": "#7b76a6", "tape": "#29f1ff",
-        "green": "#3dff3d", "cyan": "#29f1ff", "magenta": "#ff4fd8",
-        "yellow": "#ffd23f", "red": "#ff4444", "led_bg": "#04030a",
-        "reel_body": "#3ddc84", "reel_rim": "#0a2818",
-        "reel_hub": "#14121f", "reel_bg": "#05040b",
-        "selected_bg": "#ff4fd8", "selected_text": "#0e0b16",
-        "deck_border": "#3d3a55",
-        "button_bg": "#262138", "button_border": "#8a7dff",
-        "button_hover_bg": "#332a4d", "button_pressed_bg": "#0e0b16",
-        "play_bg": "#8f1d3c", "play_border": "#ff4fd8",
-        "play_hover": "#b0254a", "play_pressed": "#3d0b19",
-    },
-    "ubuntu": {
-        "bg": "#2c001e", "panel": "#3d1f38", "panel2": "#2a1628",
-        "text": "#f2e9ee", "border": "#e95420", "dim": "#5e2750",
-        "hint": "#c9a8bf", "tape": "#8fcee9",
-        "green": "#e95420", "cyan": "#8fcee9", "magenta": "#ff9c78",
-        "yellow": "#f6c445", "red": "#c0392b", "led_bg": "#12000c",
-        "reel_body": "#7a8590", "reel_rim": "#3a424c",
-        "reel_hub": "#2a1628", "reel_bg": "#120a10",
-        "selected_bg": "#e95420", "selected_text": "#2c001e",
-        "deck_border": "#5e2750",
-        "button_bg": "#40282f", "button_border": "#a86440",
-        "button_hover_bg": "#52323c", "button_pressed_bg": "#1c0f14",
-        "play_bg": "#e95420", "play_border": "#ffb08a",
-        "play_hover": "#ff5c24", "play_pressed": "#7a2c10",
-    },
-    "phosphor": {
-        "bg": "#000803", "panel": "#03130a", "panel2": "#02100a",
-        "text": "#b8ffe0", "border": "#1f7050", "dim": "#0e3a28",
-        "hint": "#5f9e80", "tape": "#8dffb2",
-        "green": "#3dff7a", "cyan": "#8dffb2", "magenta": "#7dffd0",
-        "yellow": "#ffe87a", "red": "#ffb42b", "led_bg": "#000b05",
-        "reel_body": "#2a7a4a", "reel_rim": "#123b24",
-        "reel_hub": "#02100a", "reel_bg": "#01100a",
-        "selected_bg": "#0f5c33", "selected_text": "#04140a",
-        "deck_border": "#0e3a28",
-        "button_bg": "#062b18", "button_border": "#1f7050",
-        "button_hover_bg": "#0a4024", "button_pressed_bg": "#020c07",
-        "play_bg": "#0f5c33", "play_border": "#6affa0",
-        "play_hover": "#14804a", "play_pressed": "#053018",
-    },
-    "bios": {
-        "bg": "#05051a", "panel": "#0a0f33", "panel2": "#060a24",
-        "text": "#d8dce8", "border": "#6f8cff", "dim": "#2c3a70",
-        "hint": "#8fa0c8", "tape": "#7fd4ff",
-        "green": "#e8e8ee", "cyan": "#7fd4ff", "magenta": "#b9a8ff",
-        "yellow": "#ffff8a", "red": "#ff8a7a", "led_bg": "#00000c",
-        "reel_body": "#4a5a8a", "reel_rim": "#222c52",
-        "reel_hub": "#060a24", "reel_bg": "#04071a",
-        "selected_bg": "#0f2060", "selected_text": "#ffffff",
-        "deck_border": "#2c3a70",
-        "button_bg": "#0a1140", "button_border": "#6f8cff",
-        "button_hover_bg": "#111c66", "button_pressed_bg": "#040a20",
-        "play_bg": "#0f2060", "play_border": "#9ab0ff",
-        "play_hover": "#1a2f7a", "play_pressed": "#060d33",
-    },
-}
-THEME_ORDER = list(THEMES)
+# --- Monochrom (Schwarz / Weiss) ---
+BLACK = QColor("#000000")
+PANEL = QColor("#0f0f0f")
+PANEL2 = QColor("#1a1a1a")
+LINE = QColor("#f5f5f5")
+FG = QColor("#f2f2f2")
+SOFT = QColor("#8a8a8a")
+DIM = QColor("#2e2e2e")
+LED_BG = QColor("#050505")
+EQ_LO = QColor("#555555")
+EQ_MID = QColor("#9a9a9a")
+EQ_HI = FG
+REEL_BODY = QColor("#f2f2f2")
+REEL_RIM = QColor("#2e2e2e")
+REEL_HUB = QColor("#050505")
+REEL_BG = QColor("#0a0a0a")
 
-# Wird von apply_theme() gesetzt; Paint-Code liest diese Konstanten zur Laufzeit.
-EDGE = QColor("#6d5bd0")
-NEON_GREEN = QColor("#3dff3d")
-NEON_CYAN = QColor("#29f1ff")
-NEON_MAGENTA = QColor("#ff4fd8")
-NEON_YELLOW = QColor("#ffd23f")
-GRID_DIM = QColor("#2c2840")
-EQ_RED = QColor("#ff4444")
-LED_BG = QColor("#04030a")
-REEL_BODY = QColor("#3ddc84")
-REEL_RIM = QColor("#0a2818")
-REEL_HUB = QColor("#14121f")
-REEL_BG = QColor("#05040b")
-STYLESHEET = ""
-
-
-def build_stylesheet(c):
-    return f"""
-QWidget {{
-    background: {c['bg']};
-    color: {c['text']};
+STYLESHEET = """
+QWidget {
+    background: #000000;
+    color: #f2f2f2;
     font-family: "DejaVu Sans Mono", monospace;
     font-weight: bold;
     font-size: 12px;
-}}
-QListWidget {{
-    background: {c['panel']};
-    border: 3px solid {c['border']};
+}
+QListWidget {
+    background: #0f0f0f;
+    border: 2px solid #f2f2f2;
     border-radius: 0;
     padding: 4px;
-    color: {c['text']};
-}}
-QListWidget::item {{
+    color: #f2f2f2;
+}
+QListWidget::item {
     padding: 4px 8px;
-    border: 1px solid {c['dim']};
-    background: {c['panel2']};
-}}
-QListWidget::item:selected {{
-    background: {c['selected_bg']};
-    color: {c['selected_text']};
-}}
-QFrame#boombox {{
-    background: {c['panel']};
-    border: 3px solid {c['border']};
+    border: 1px solid #2e2e2e;
+    background: #1a1a1a;
+}
+QListWidget::item:selected {
+    background: #f2f2f2;
+    color: #000000;
+}
+QFrame#boombox {
+    background: #0f0f0f;
+    border: 2px solid #f2f2f2;
     border-radius: 0;
-}}
-QFrame#center {{ background: transparent; border: none; }}
-QFrame#deck {{
-    background: {c['bg']};
-    border: 3px solid {c['deck_border']};
+}
+QFrame#center { background: transparent; border: none; }
+QFrame#deck {
+    background: #000000;
+    border: 2px solid #2e2e2e;
     border-radius: 0;
-}}
-QLabel#hint {{
-    color: {c['hint']};
+}
+QLabel#hint {
+    color: #8a8a8a;
     font-size: 11px;
     letter-spacing: 2px;
-}}
-QLabel#tape {{
-    color: {c['tape']};
+}
+QLabel#tape {
+    color: #f2f2f2;
     font-size: 12px;
     letter-spacing: 2px;
     background: transparent;
-}}
-QLabel#knoblabel {{
-    color: {c['yellow']};
+}
+QLabel#knoblabel {
+    color: #8a8a8a;
     font-size: 11px;
     letter-spacing: 2px;
     background: transparent;
-}}
-QPushButton {{
-    background: {c['button_bg']};
-    border: 3px solid {c['button_border']};
+}
+QPushButton {
+    background: #000000;
+    border: 2px solid #f2f2f2;
     border-radius: 0;
     padding: 6px 8px;
-    color: {c['text']};
+    color: #f2f2f2;
     font-weight: bold;
     font-size: 12px;
-}}
-QPushButton:hover {{
-    background: {c['button_hover_bg']};
-    border-color: {c['tape']};
-}}
-QPushButton:pressed {{
-    background: {c['button_pressed_bg']};
-    border-color: {c['magenta']};
+}
+QPushButton:hover {
+    background: #1a1a1a;
+    border-color: #ffffff;
+}
+QPushButton:pressed {
+    background: #f2f2f2;
+    color: #000000;
     padding: 7px 7px 5px 9px;
-}}
-QPushButton#play {{
-    background: {c['play_bg']};
-    border-color: {c['play_border']};
-    color: #ffffff;
-}}
-QPushButton#play:hover {{ background: {c['play_hover']}; }}
-QPushButton#play:pressed {{ background: {c['play_pressed']}; }}
+}
+QPushButton#play {
+    background: #f2f2f2;
+    border-color: #ffffff;
+    color: #000000;
+}
+QPushButton#play:hover { background: #e0e0e0; border-color: #ffffff; }
+QPushButton#play:pressed { background: #bdbdbd; color: #000000; }
 """
-
-
-def apply_theme(name):
-    global EDGE, NEON_GREEN, NEON_CYAN, NEON_MAGENTA, NEON_YELLOW, GRID_DIM
-    global EQ_RED, LED_BG, REEL_BODY, REEL_RIM, REEL_HUB, REEL_BG, STYLESHEET
-    c = THEMES[name]
-    EDGE = QColor(c["border"])
-    NEON_GREEN = QColor(c["green"])
-    NEON_CYAN = QColor(c["cyan"])
-    NEON_MAGENTA = QColor(c["magenta"])
-    NEON_YELLOW = QColor(c["yellow"])
-    GRID_DIM = QColor(c["dim"])
-    EQ_RED = QColor(c["red"])
-    LED_BG = QColor(c["led_bg"])
-    REEL_BODY = QColor(c["reel_body"])
-    REEL_RIM = QColor(c["reel_rim"])
-    REEL_HUB = QColor(c["reel_hub"])
-    REEL_BG = QColor(c["reel_bg"])
-    STYLESHEET = build_stylesheet(c)
-
-
-apply_theme("arcade")
-
 # 5x7 Bitmap-Font: jedes '#' wird als Quadrat gezeichnet -> immer knackig,
 # unabhaengig von DPI/Skalierung.
 GLYPHS = {
@@ -379,7 +291,7 @@ class LedDisplay(QWidget):
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
             p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, False)
             pxfill(p, 0, 0, self.width(), self.height(), LED_BG)
-            p.setPen(EDGE)
+            p.setPen(LINE)
             p.setBrush(Qt.BrushStyle.NoBrush)
             p.drawRect(self.rect().adjusted(0, 0, -1, -1))
 
@@ -387,7 +299,7 @@ class LedDisplay(QWidget):
             status = "PLAY" if self.playing else "STBY"
             sstr = f"{status}  VOL {self.volume:02d}  STEREO"
             sw = bit_text_width(sstr, 3)
-            draw_bit_text(p, sstr, (self.width() - sw) // 2, 12, NEON_GREEN, 3)
+            draw_bit_text(p, sstr, (self.width() - sw) // 2, 12, FG, 3)
 
             # --- Equalizer (blockig, gruen->gelb->rot, zentriert) ---
             maxh = 40
@@ -398,13 +310,13 @@ class LedDisplay(QWidget):
                 x = eq_x + i * 18
                 blocks = int(v * (maxh // 4))
                 for b in range(blocks):
-                    col = NEON_GREEN
+                    col = EQ_LO
+                    if b >= 3:
+                        col = EQ_MID
                     if b >= 6:
-                        col = NEON_YELLOW
-                    if b >= 8:
-                        col = EQ_RED
+                        col = EQ_HI
                     pxfill(p, x, baseline - (b + 1) * 4, 12, 4, col)
-                pxfill(p, x, baseline, 12, 3, GRID_DIM)
+                pxfill(p, x, baseline, 12, 3, DIM)
 
             # --- Marquee (scrollend, zentriert) ---
             title = self.title.upper()
@@ -415,12 +327,12 @@ class LedDisplay(QWidget):
             else:
                 shown = title[:14]
             mw = bit_text_width(shown, 4)
-            draw_bit_text(p, shown, (self.width() - mw) // 2, 116, NEON_CYAN, 4)
+            draw_bit_text(p, shown, (self.width() - mw) // 2, 116, FG, 4)
 
             # --- Zeit (zentriert) ---
             tstr = f"TIME {self._fmt(self.elapsed)} / {self._fmt(self.total)}"
             tw = bit_text_width(tstr, 3)
-            draw_bit_text(p, tstr, (self.width() - tw) // 2, 166, NEON_MAGENTA, 3)
+            draw_bit_text(p, tstr, (self.width() - tw) // 2, 166, SOFT, 3)
 
             # --- Scanlines (dezent) ---
             for y in range(0, self.height(), 4):
@@ -459,7 +371,7 @@ class ReelWidget(QWidget):
                 y1 = cy + 8 * math.sin(a)
                 x2 = cx + 24 * math.cos(a)
                 y2 = cy + 24 * math.sin(a)
-                pixel_line(p, int(x1), int(y1), int(x2), int(y2), NEON_GREEN, step=3, size=2)
+                pixel_line(p, int(x1), int(y1), int(x2), int(y2), SOFT, step=3, size=2)
         finally:
             p.end()
 
@@ -513,7 +425,7 @@ class PixelSlider(QWidget):
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
             p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, False)
 
-            draw_bit_text(p, "VOL", 8, 10, NEON_CYAN, 3)
+            draw_bit_text(p, "VOL", 8, 10, SOFT, 3)
 
             left, top = 52, 16
             width = self.width() - left - 12
@@ -525,23 +437,17 @@ class PixelSlider(QWidget):
             fill = round(self._value / 100 * n)
             for i in range(n):
                 x = left + i * (block + gap)
-                col = GRID_DIM
+                col = DIM
                 if i < fill:
-                    frac = i / n
-                    if frac > 0.75:
-                        col = NEON_MAGENTA
-                    elif frac > 0.5:
-                        col = NEON_YELLOW
-                    else:
-                        col = NEON_GREEN
+                    col = EQ_MID if i / n > 0.6 else FG
                 pxfill(p, x, top, block, block, col)
 
-            p.setPen(EDGE)
+            p.setPen(LINE)
             p.setBrush(Qt.BrushStyle.NoBrush)
             p.drawRect(QRect(left - 2, top - 2, track + 3, block + 3))
 
             vtext = f"{self._value:03d}"
-            draw_bit_text(p, vtext, left + track + 12, 13, NEON_YELLOW, 2)
+            draw_bit_text(p, vtext, left + track + 12, 13, FG, 2)
         finally:
             p.end()
 
@@ -652,10 +558,6 @@ class BoomBox(QWidget):
         power.setObjectName("knoblabel")
         power.setAlignment(Qt.AlignmentFlag.AlignCenter)
         knobs.addWidget(power, 0, Qt.AlignmentFlag.AlignVCenter)
-        knobs.addSpacing(10)
-        self.theme_btn = self._make_button("ARCADE", self._cycle_theme)
-        self.theme_btn.setToolTip("THEME: arcade -> ubuntu -> phosphor -> bios")
-        knobs.addWidget(self.theme_btn, 0, Qt.AlignmentFlag.AlignVCenter)
         cl.addLayout(knobs)
 
         box_layout.addWidget(center)
@@ -695,21 +597,6 @@ class BoomBox(QWidget):
         if big:
             b.setObjectName("play")
         return b
-
-    # ---------- Themes ----------
-    def _apply_theme(self, name):
-        apply_theme(name)
-        self.setStyleSheet(STYLESHEET)
-        self.theme_btn.setText(name.upper())
-        self.led.update()
-        self.reel_left.update()
-        self.reel_right.update()
-        self.brand.update()
-        self.volume_slider.update()
-
-    def _cycle_theme(self):
-        idx = (THEME_ORDER.index(self.theme_btn.text().lower()) + 1) % len(THEME_ORDER)
-        self._apply_theme(THEME_ORDER[idx])
 
     # ---------- Playlist / Audio ----------
     def add_files(self, paths):
@@ -800,7 +687,7 @@ class BoomBox(QWidget):
 
 
 class PixelBrand(QWidget):
-    """Neon-Schriftzug in wechselnden Pixel-Farben."""
+    """Schriftzug im monochromen Pixel-Stil."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -811,7 +698,7 @@ class PixelBrand(QWidget):
         try:
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
             text = "BOOMNOXX"
-            colors = (NEON_CYAN, NEON_MAGENTA, NEON_YELLOW)
+            colors = (FG, SOFT, FG)
             total = bit_text_width(text, 3)
             x = (self.width() - total) // 2
             for i, ch in enumerate(text):

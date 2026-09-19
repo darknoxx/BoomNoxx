@@ -1,25 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
-  <rect x="8" y="22" width="80" height="52" fill="#171529" stroke="#6d5bd0" stroke-width="4"/>
-  <rect x="16" y="30" width="64" height="36" fill="#131022" stroke="#2c2840" stroke-width="2"/>
-
-  <rect x="22" y="34" width="52" height="20" fill="#04030a"/>
-
-  <rect x="24" y="44" width="6" height="8" fill="#3dff3d"/>
-  <rect x="32" y="42" width="6" height="10" fill="#3dff3d"/>
-  <rect x="40" y="40" width="6" height="12" fill="#ffd23f"/>
-  <rect x="48" y="41" width="6" height="11" fill="#3dff3d"/>
-  <rect x="56" y="45" width="6" height="7" fill="#3dff3d"/>
-  <rect x="64" y="44" width="6" height="8" fill="#29f1ff"/>
-
-  <rect x="24" y="58" width="48" height="4" fill="#3d3a55"/>
-
-  <circle cx="28" cy="64" r="7" fill="#3ddc84" stroke="#0a2818" stroke-width="2"/>
-  <circle cx="28" cy="64" r="2.5" fill="#0a2818"/>
-  <circle cx="68" cy="64" r="7" fill="#3ddc84" stroke="#0a2818" stroke-width="2"/>
-  <circle cx="68" cy="64" r="2.5" fill="#0a2818"/>
-
-  <rect x="44" y="60" width="8" height="8" fill="#2c2840"/>
-
-  <rect x="16" y="34" width="4" height="20" fill="#ff4fd8"/>
-  <rect x="76" y="34" width="4" height="20" fill="#29f1ff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <rect x="10" y="10" width="76" height="76" rx="18" fill="#0a0a0a" stroke="#f2f2f2" stroke-width="3"/>
+  <g fill="#f2f2f2">
+    <rect x="32" y="20" width="8" height="8"/>
+    <rect x="32" y="28" width="16" height="8"/>
+    <rect x="32" y="36" width="24" height="8"/>
+    <rect x="32" y="44" width="32" height="8"/>
+    <rect x="32" y="52" width="24" height="8"/>
+    <rect x="32" y="60" width="16" height="8"/>
+    <rect x="32" y="68" width="8" height="8"/>
+  </g>
 </svg>
