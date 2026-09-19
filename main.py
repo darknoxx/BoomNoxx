@@ -12,9 +12,11 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
+    QLayout,
     QListWidget,
     QListWidgetItem,
     QPushButton,
+    QStackedLayout,
     QVBoxLayout,
     QWidget,
 )
@@ -337,6 +339,70 @@ class LedDisplay(QWidget):
             p.end()
 
 
+class MiniLed(QWidget):
+    """Kompakte Pixel-LED fuer den Mini-Modus."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.title = "INSERT TAPE "
+        self.playing = False
+        self.volume = 50
+        self._tick = 0
+        self.setFixedHeight(52)
+        self.setMinimumWidth(200)
+        tm = QTimer(self)
+        tm.timeout.connect(self._animate)
+        tm.start(60)
+
+    def set_info(self, title=None, playing=None):
+        if title is not None:
+            self.title = title
+        if playing is not None:
+            self.playing = playing
+        self.update()
+
+    def set_volume(self, value):
+        self.volume = value
+        self.update()
+
+    def _animate(self):
+        if self.playing:
+            self._tick += 1
+            self.update()
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        try:
+            p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+            p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, False)
+            pxfill(p, 0, 0, self.width(), self.height(), LED_BG)
+            p.setPen(LINE)
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            p.drawRect(self.rect().adjusted(0, 0, -1, -1))
+
+            status = "PLAY" if self.playing else "STBY"
+            s = 3 if self.width() >= 280 else 2 if self.width() >= 200 else 1
+            sstr = f"{status}  VOL {self.volume:02d}"
+            sw = bit_text_width(sstr, s)
+            draw_bit_text(p, sstr, (self.width() - sw) // 2, 6, SOFT, s)
+
+            title = self.title.upper()
+            shown_len = max(4, (self.width() - 24) // (6 * s - 1))
+            if self.playing and len(title) > shown_len:
+                span = "  " + title + "  "
+                off = (self._tick // 3) % len(span)
+                shown = span[off:off + shown_len]
+            else:
+                shown = title[:shown_len]
+            mw = bit_text_width(shown, s)
+            draw_bit_text(p, shown, (self.width() - mw) // 2, 10 + s * 7, FG, s)
+
+            for y in range(0, self.height(), 4):
+                pxfill(p, 0, y, self.width(), 1, QColor(0, 0, 0, 42))
+        finally:
+            p.end()
+
+
 class ReelWidget(QWidget):
     """Pixelart-Kassettenspule."""
 
@@ -377,11 +443,15 @@ class PixelSlider(QWidget):
 
     valueChanged = Signal(int)
 
-    def __init__(self, value=60, parent=None):
+    def __init__(self, value=60, width=280, parent=None):
         super().__init__(parent)
         self._value = max(0, min(100, value))
         self._drag_active = False
-        self.setFixedSize(280, 40)
+        if width >= 240:
+            self._left, self._reserve, self._n, self._gap = 52, 58, 18, 4
+        else:
+            self._left, self._reserve, self._n, self._gap = 40, 44, 12, 3
+        self.setFixedSize(width, 40)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setMouseTracking(True)
 
@@ -396,9 +466,7 @@ class PixelSlider(QWidget):
             self.update()
 
     def _set_from_x(self, x):
-        left = 52
-        avail = self.width() - left - 58
-        ratio = (x - left) / avail
+        ratio = (x - self._left) / (self.width() - self._left - self._reserve)
         self.setValue(round(max(0.0, min(1.0, ratio)) * 100))
 
     def mousePressEvent(self, e):
@@ -421,14 +489,15 @@ class PixelSlider(QWidget):
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
             p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, False)
 
-            draw_bit_text(p, "VOL", 8, 10, SOFT, 3)
+            if self.width() >= 240:
+                draw_bit_text(p, "VOL", 8, 10, SOFT, 3)
 
-            left, top = 52, 16
+            left, top = self._left, 16
             width = self.width() - left - 12
-            reserve = 58
+            reserve = self._reserve
             track = width - reserve
-            n = 18
-            gap = 4
+            n = self._n
+            gap = self._gap
             block = (track - (n - 1) * gap) // n
             fill = round(self._value / 100 * n)
             for i in range(n):
@@ -484,21 +553,32 @@ class BoomBox(QWidget):
         self.setStyleSheet(STYLESHEET)
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(16, 12, 16, 16)
-        root.setSpacing(8)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setSpacing(0)
+        root.setSizeConstraint(QLayout.SizeConstraint.SetNoConstraint)
+        self._stack = QStackedLayout()
+        root.addLayout(self._stack)
+
+        # ---------- Standardseite ----------
+        normal = QWidget()
+        self._normal_page = normal
+        self._wire_drops(normal)
+        nl = QVBoxLayout(normal)
+        nl.setContentsMargins(16, 12, 16, 16)
+        nl.setSpacing(8)
 
         self.brand = PixelBrand()
-        root.addWidget(self.brand, 0)
+        nl.addWidget(self.brand, 0)
 
         self.playlist = PlaylistWidget()
         self.playlist.files_dropped.connect(self.add_files)
         self.playlist.itemDoubleClicked.connect(self._play_from_list)
-        root.addWidget(self.playlist, 2)
+        nl.addWidget(self.playlist, 2)
 
         hint = QLabel("DRAG & DROP MP3 FILES  OR  PRESS [EJECT]")
         hint.setObjectName("hint")
         hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        root.addWidget(hint)
+        nl.addWidget(hint)
 
         # ---------- Boombox-Front ----------
         box = QFrame()
@@ -536,7 +616,7 @@ class BoomBox(QWidget):
         btns = QHBoxLayout()
         btns.setSpacing(6)
         self.btn_prev = self._make_button("|<<", self._prev)
-        self.btn_play = self._make_button("PLAY/PAUSE", self._toggle_play, big=True)
+        self.btn_play = self._make_button("PLAY", self._toggle_play, big=True)
         self.btn_stop = self._make_button("STOP", self._stop)
         self.btn_next = self._make_button(">>|", self._next)
         self.btn_open = self._make_button("EJECT", self._open_files)
@@ -554,11 +634,41 @@ class BoomBox(QWidget):
         power.setObjectName("knoblabel")
         power.setAlignment(Qt.AlignmentFlag.AlignCenter)
         knobs.addWidget(power, 0, Qt.AlignmentFlag.AlignVCenter)
+        self.btn_mini = self._make_button("MINI", self._go_compact)
+        knobs.addWidget(self.btn_mini, 0, Qt.AlignmentFlag.AlignVCenter)
         cl.addLayout(knobs)
 
         box_layout.addWidget(center)
 
-        root.addWidget(box, 3)
+        nl.addWidget(box, 3)
+
+        # ---------- Kompaktseite ----------
+        compact = QWidget()
+        self._compact_page = compact
+        self._wire_drops(compact)
+        cl2 = QHBoxLayout(compact)
+        cl2.setContentsMargins(10, 8, 10, 8)
+        cl2.setSpacing(8)
+
+        self.btn_expand = self._make_button("EXPAND", self._go_normal)
+        cl2.addWidget(self.btn_expand)
+
+        self.mini_led = MiniLed()
+        cl2.addWidget(self.mini_led, 1)
+
+        self.btn_mini_prev = self._make_button("|<<", self._prev)
+        self.btn_mini_play = self._make_button("PLAY", self._toggle_play, big=True)
+        self.btn_mini_next = self._make_button(">>|", self._next)
+        for b in (self.btn_mini_prev, self.btn_mini_play, self.btn_mini_next):
+            cl2.addWidget(b)
+
+        self.compact_volume = PixelSlider(value=50, width=170)
+        self.compact_volume.valueChanged.connect(self._set_volume)
+        cl2.addWidget(self.compact_volume, 0, Qt.AlignmentFlag.AlignVCenter)
+
+        self._stack.addWidget(normal)
+        self._stack.addWidget(compact)
+        self._stack.setCurrentIndex(0)
 
         self._set_volume(50)
 
@@ -571,6 +681,8 @@ class BoomBox(QWidget):
         self.player.playbackStateChanged.connect(self._on_state)
         self.player.mediaStatusChanged.connect(self._on_media_status)
         self.player.errorOccurred.connect(self._on_error)
+
+        self.adjustSize()
 
     def _wire_drops(self, widget):
         widget.dragEnterEvent = self._drag_enter
@@ -593,6 +705,28 @@ class BoomBox(QWidget):
         if big:
             b.setObjectName("play")
         return b
+
+    # ---------- Modus-Umschaltung ----------
+    def _frame_delta(self):
+        return self.frameGeometry().size() - self.size()
+
+    def _go_compact(self):
+        self._normal_geometry = self.geometry()
+        self._stack.setCurrentWidget(self._compact_page)
+        self.setWindowTitle("BOOMNOXX · MINI")
+        d = self._frame_delta()
+        self.resize(
+            self._compact_page.sizeHint().width() + d.width(),
+            self._compact_page.sizeHint().height() + d.height(),
+        )
+
+    def _go_normal(self):
+        self._stack.setCurrentWidget(self._normal_page)
+        self.setWindowTitle("BOOMNOXX")
+        if getattr(self, "_normal_geometry", None):
+            self.setGeometry(self._normal_geometry)
+        else:
+            self.adjustSize()
 
     # ---------- Playlist / Audio ----------
     def add_files(self, paths):
@@ -620,6 +754,7 @@ class BoomBox(QWidget):
         self.player.play()
         self.playlist.setCurrentRow(self.playlist.row(item))
         self.led.set_info(title=path.split("/")[-1], playing=True)
+        self.mini_led.set_info(title=path.split("/")[-1], playing=True)
         self.reel_left.speed = 4.0
         self.reel_right.speed = 4.0
 
@@ -667,12 +802,20 @@ class BoomBox(QWidget):
     def _set_volume(self, value):
         self.audio.setVolume(value / 100.0)
         self.led.set_volume(value)
+        self.mini_led.set_volume(value)
+        for s in (self.volume_slider, self.compact_volume):
+            if s.value() != value:
+                s.setValue(value)
 
     def _on_state(self, state):
         playing = state == QMediaPlayer.PlaybackState.PlayingState
         self.led.set_info(playing=playing)
+        self.mini_led.set_info(playing=playing)
         self.reel_left.speed = 4.0 if playing else 0.0
         self.reel_right.speed = 4.0 if playing else 0.0
+        label = "PAUSE" if playing else "PLAY"
+        self.btn_play.setText(label)
+        self.btn_mini_play.setText(label)
 
     def _on_media_status(self, status):
         if status == QMediaPlayer.MediaStatus.EndOfMedia:
@@ -680,6 +823,7 @@ class BoomBox(QWidget):
 
     def _on_error(self, error, msg):
         self.led.set_info(title=f"ERROR: {str(msg)[:26]}", playing=False)
+        self.mini_led.set_info(title=f"ERROR: {str(msg)[:26]}", playing=False)
 
 
 class PixelBrand(QWidget):
