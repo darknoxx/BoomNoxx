@@ -481,20 +481,14 @@ class PixelCloseButton(QPushButton):
         try:
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
             if not self.isEnabled():
-                bg, col, border = "#000000", DIM, DIM
-            elif self.isDown():
-                bg, col, border = FG, "#000000", LINE
-            elif self._hover:
-                bg, col, border = "#1a1a1a", FG, SOFT
+                col = DIM
+            elif self._hover or self.isDown():
+                col = FG
             else:
-                bg, col, border = "#000000", FG, DIM
-            pxfill(p, 0, 0, self.width(), self.height(), bg)
-            p.setPen(border)
-            p.setBrush(Qt.BrushStyle.NoBrush)
-            p.drawRect(0, 0, self.width() - 1, self.height() - 1)
+                col = SOFT
             cx, cy = self.width() // 2, self.height() // 2
             for a in range(4):
-                for off in range(2):
+                for off in range(3):
                     d = a + off
                     pxfill(p, cx - d, cy - d, 1, 1, col)
                     pxfill(p, cx + d, cy + d, 1, 1, col)
