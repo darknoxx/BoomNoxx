@@ -683,7 +683,7 @@ class BoomBox(QWidget):
         self.player.errorOccurred.connect(self._on_error)
 
         self.setMinimumSize(self._normal_page.minimumSizeHint())
-        self.adjustSize()
+        self.resize(self.minimumWidth(), self.minimumHeight())
 
     def _wire_drops(self, widget):
         widget.dragEnterEvent = self._drag_enter
@@ -708,28 +708,17 @@ class BoomBox(QWidget):
         return b
 
     # ---------- Modus-Umschaltung ----------
-    def _frame_delta(self):
-        return self.frameGeometry().size() - self.size()
-
     def _go_compact(self):
-        self._normal_geometry = self.geometry()
         self.setMinimumSize(self._compact_page.minimumSizeHint())
         self._stack.setCurrentWidget(self._compact_page)
         self.setWindowTitle("BOOMNOXX · MINI")
-        d = self._frame_delta()
-        self.resize(
-            self._compact_page.sizeHint().width() + d.width(),
-            self._compact_page.sizeHint().height() + d.height(),
-        )
+        self.resize(self.minimumWidth(), self.minimumHeight())
 
     def _go_normal(self):
         self.setMinimumSize(self._normal_page.minimumSizeHint())
         self._stack.setCurrentWidget(self._normal_page)
         self.setWindowTitle("BOOMNOXX")
-        if getattr(self, "_normal_geometry", None):
-            self.setGeometry(self._normal_geometry)
-        else:
-            self.adjustSize()
+        self.resize(self.minimumWidth(), self.minimumHeight())
 
     # ---------- Playlist / Audio ----------
     def add_files(self, paths):
