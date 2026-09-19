@@ -596,7 +596,7 @@ class BoomBox(QWidget):
         self.player = player
         self.audio = audio_output
 
-        self.setWindowTitle("")
+        self.setWindowTitle(" ")
         self.setAcceptDrops(True)
         self.setStyleSheet(STYLESHEET)
 
@@ -768,7 +768,7 @@ class BoomBox(QWidget):
     def _go_compact(self):
         self.setMinimumSize(self._compact_page.minimumSizeHint())
         self._stack.setCurrentWidget(self._compact_page)
-        self.setWindowTitle("")
+        self.setWindowTitle(" ")
         self.resize(self.minimumWidth(), self.minimumHeight())
 
     def _go_normal(self):
