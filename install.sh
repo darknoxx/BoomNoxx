@@ -36,10 +36,11 @@ gen() {
 Type=Application
 Name=BoomNoxx
 Comment=Retro-Pixel-MP3-Player
-Exec=$VENV_PY $APP
+Exec=$VENV_PY $APP %F
 Icon=$DIR/icon.svg
 Terminal=false
 Categories=Audio;Music;Player;
+MimeType=audio/mpeg;audio/x-wav;audio/wav;audio/ogg;application/ogg;audio/flac;audio/x-flac;audio/mp4;audio/x-m4a;audio/aac;audio/x-aac;
 StartupNotify=true
 Keywords=mp3;musik;boombox;retro;
 EOF
@@ -50,4 +51,4 @@ gen
 chmod +x "$DESKTOP" 2>/dev/null || true
 update-desktop-database "$APPS" 2>/dev/null || true
 echo "Installiert: $DESKTOP"
-echo "BoomNoxx erscheint jetzt im Dash / Anwendungsgrid."
+echo "BoomNoxx erscheint jetzt im Dash / Anwendungsgrid und unter 'Oeffnen mit' fuer Audiodateien."

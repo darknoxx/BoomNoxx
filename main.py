@@ -898,8 +898,10 @@ class PixelBrand(QWidget):
 
 
 def main():
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.Round
+    )
     app = QApplication(sys.argv)
-    app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Round)
     app.setApplicationName("BoomNoxx")
 
     player = QMediaPlayer()
@@ -907,6 +909,9 @@ def main():
     player.setAudioOutput(audio)
 
     win = BoomBox(player, audio)
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
+    if args:
+        win.add_files(args)
     win.show()
     sys.exit(app.exec())
 
