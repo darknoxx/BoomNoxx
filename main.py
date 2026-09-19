@@ -349,7 +349,7 @@ class MiniLed(QWidget):
         self.volume = 50
         self._tick = 0
         self.setFixedHeight(52)
-        self.setMinimumWidth(200)
+        self.setMinimumWidth(120)
         tm = QTimer(self)
         tm.timeout.connect(self._animate)
         tm.start(60)
@@ -381,10 +381,9 @@ class MiniLed(QWidget):
             p.drawRect(self.rect().adjusted(0, 0, -1, -1))
 
             status = "PLAY" if self.playing else "STBY"
-            s = 3 if self.width() >= 280 else 2 if self.width() >= 200 else 1
-            sstr = f"{status}  VOL {self.volume:02d}"
-            sw = bit_text_width(sstr, s)
-            draw_bit_text(p, sstr, (self.width() - sw) // 2, 6, SOFT, s)
+            s = 3 if self.width() >= 250 else 2 if self.width() >= 110 else 1
+            sw = bit_text_width(status, s)
+            draw_bit_text(p, status, (self.width() - sw) // 2, 6, SOFT, s)
 
             title = self.title.upper()
             shown_len = max(4, (self.width() - 24) // (6 * s - 1))
@@ -450,7 +449,7 @@ class PixelSlider(QWidget):
         if width >= 240:
             self._left, self._reserve, self._n, self._gap = 52, 58, 18, 4
         else:
-            self._left, self._reserve, self._n, self._gap = 40, 44, 12, 3
+            self._left, self._reserve, self._n, self._gap = 36, 40, 10, 2
         self.setFixedSize(width, 40)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setMouseTracking(True)
@@ -466,7 +465,8 @@ class PixelSlider(QWidget):
             self.update()
 
     def _set_from_x(self, x):
-        ratio = (x - self._left) / (self.width() - self._left - self._reserve)
+        avail = max(1, self.width() - self._left - 12 - self._reserve)
+        ratio = (x - self._left) / avail
         self.setValue(round(max(0.0, min(1.0, ratio)) * 100))
 
     def mousePressEvent(self, e):
@@ -647,8 +647,8 @@ class BoomBox(QWidget):
         self._compact_page = compact
         self._wire_drops(compact)
         cl2 = QHBoxLayout(compact)
-        cl2.setContentsMargins(10, 8, 10, 8)
-        cl2.setSpacing(8)
+        cl2.setContentsMargins(6, 6, 6, 6)
+        cl2.setSpacing(4)
 
         self.btn_expand = self._make_button("EXPAND", self._go_normal)
         cl2.addWidget(self.btn_expand)
@@ -662,7 +662,7 @@ class BoomBox(QWidget):
         for b in (self.btn_mini_prev, self.btn_mini_play, self.btn_mini_next):
             cl2.addWidget(b)
 
-        self.compact_volume = PixelSlider(value=50, width=170)
+        self.compact_volume = PixelSlider(value=50, width=130)
         self.compact_volume.valueChanged.connect(self._set_volume)
         cl2.addWidget(self.compact_volume, 0, Qt.AlignmentFlag.AlignVCenter)
 
