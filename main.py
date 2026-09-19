@@ -664,7 +664,7 @@ class BoomBox(QWidget):
         btns = QHBoxLayout()
         btns.setSpacing(6)
         self.btn_prev = self._make_button("|<<", self._prev)
-        self.btn_play = self._make_button("PLAY", self._toggle_play, big=True)
+        self.btn_play = self._make_button("PLAY", self._toggle_play, big=True, fixed_width=60)
         self.btn_stop = self._make_button("STOP", self._stop)
         self.btn_next = self._make_button(">>|", self._next)
         self.btn_open = self._make_button("EJECT", self._open_files)
@@ -714,7 +714,7 @@ class BoomBox(QWidget):
         btnrow.addWidget(self.btn_expand)
         btnrow.addStretch(1)
         self.btn_mini_prev = self._make_button("|<<", self._prev)
-        self.btn_mini_play = self._make_button("PLAY", self._toggle_play, big=True)
+        self.btn_mini_play = self._make_button("PLAY", self._toggle_play, big=True, fixed_width=60)
         self.btn_mini_next = self._make_button(">>|", self._next)
         for b in (self.btn_mini_prev, self.btn_mini_play, self.btn_mini_next):
             btnrow.addWidget(b)
@@ -756,12 +756,14 @@ class BoomBox(QWidget):
             self.add_files([u.toLocalFile() for u in urls])
             event.acceptProposedAction()
 
-    def _make_button(self, label, handler, big=False):
+    def _make_button(self, label, handler, big=False, fixed_width=None):
         b = QPushButton(label)
         b.setCursor(Qt.CursorShape.PointingHandCursor)
         b.clicked.connect(handler)
         if big:
             b.setObjectName("play")
+        if fixed_width:
+            b.setFixedWidth(fixed_width)
         return b
 
     # ---------- Modus-Umschaltung ----------
