@@ -22,9 +22,6 @@ from PySide6.QtWidgets import (
 AUDIO_EXTENSIONS = {".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac"}
 
 # --- Monochrom (Schwarz / Weiss) ---
-BLACK = QColor("#000000")
-PANEL = QColor("#0f0f0f")
-PANEL2 = QColor("#1a1a1a")
 LINE = QColor("#f5f5f5")
 FG = QColor("#f2f2f2")
 SOFT = QColor("#8a8a8a")
@@ -212,7 +209,6 @@ def draw_bit_text(painter, text, x, y, color, scale):
         cx += 6 * scale
 
 
-
 def pixel_block_disc(painter, cx, cy, outer, inner, body, hole):
     """Blockige Pixelscheibe gefuellt mit Ringen."""
     for dy in range(-outer, outer + 1):
@@ -301,7 +297,7 @@ class LedDisplay(QWidget):
             sw = bit_text_width(sstr, 3)
             draw_bit_text(p, sstr, (self.width() - sw) // 2, 12, FG, 3)
 
-            # --- Equalizer (blockig, gruen->gelb->rot, zentriert) ---
+            # --- Equalizer (blockig, grau gestuft: dunkel -> hell) ---
             maxh = 40
             baseline = 108
             eq_w = 14 * 18 - 6
