@@ -481,23 +481,25 @@ class PixelCloseButton(QPushButton):
         try:
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
             if not self.isEnabled():
-                pxfill(p, 0, 0, self.width(), self.height(), QColor("#000000"))
-                col = DIM
+                bg, col, border = "#000000", DIM, DIM
+            elif self.isDown():
+                bg, col, border = FG, "#000000", LINE
+            elif self._hover:
+                bg, col, border = "#1a1a1a", FG, SOFT
             else:
-                pressed = self.isDown()
-                if pressed:
-                    pxfill(p, 0, 0, self.width(), self.height(), FG)
-                    col = QColor("#000000")
-                else:
-                    pxfill(p, 0, 0, self.width(), self.height(),
-                           QColor("#1a1a1a") if self._hover else QColor("#000000"))
-                    col = FG
-            p.setPen(LINE if self._hover else SOFT)
+                bg, col, border = "#000000", FG, DIM
+            pxfill(p, 0, 0, self.width(), self.height(), bg)
+            p.setPen(border)
             p.setBrush(Qt.BrushStyle.NoBrush)
             p.drawRect(0, 0, self.width() - 1, self.height() - 1)
             cx, cy = self.width() // 2, self.height() // 2
-            pixel_line(p, cx - 5, cy - 4, cx + 5, cy + 4, col, step=1, size=2)
-            pixel_line(p, cx - 5, cy + 4, cx + 5, cy - 4, col, step=1, size=2)
+            for a in range(4):
+                for off in range(2):
+                    d = a + off
+                    pxfill(p, cx - d, cy - d, 1, 1, col)
+                    pxfill(p, cx + d, cy + d, 1, 1, col)
+                    pxfill(p, cx + d, cy - d, 1, 1, col)
+                    pxfill(p, cx - d, cy + d, 1, 1, col)
         finally:
             p.end()
 
