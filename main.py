@@ -981,6 +981,7 @@ def main():
     )
     app = QApplication(sys.argv)
     app.setApplicationName("BoomNoxx")
+    app.setDesktopFileName("boomnoxx")
 
     player = QMediaPlayer()
     audio = QAudioOutput()

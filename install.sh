@@ -40,6 +40,7 @@ Exec=$VENV_PY $APP %F
 Icon=$DIR/icon.svg
 Terminal=false
 Categories=Audio;Music;Player;
+StartupWMClass=boomnoxx
 MimeType=audio/mpeg;audio/x-wav;audio/wav;audio/ogg;application/ogg;audio/flac;audio/x-flac;audio/mp4;audio/x-m4a;audio/aac;audio/x-aac;
 StartupNotify=true
 Keywords=mp3;musik;boombox;retro;
