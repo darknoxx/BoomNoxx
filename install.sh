@@ -7,9 +7,26 @@ DESKTOP="$APPS/boomnoxx.desktop"
 VENV_PY="$DIR/.venv/bin/python"
 APP="$DIR/main.py"
 
+if [ "${1:-}" = "--uninstall" ]; then
+    rm -f "$DESKTOP"
+    update-desktop-database "$APPS" 2>/dev/null || true
+    echo "Entfernt: $DESKTOP"
+    exit 0
+fi
+
 if [ ! -x "$VENV_PY" ]; then
-    echo "Fehler: venv nicht gefunden ($VENV_PY)"
-    echo "Erstelle es mit:  python3 -m venv $DIR/.venv && $VENV_PY -m pip install -r $DIR/requirements.txt"
+    echo "[setup] venv fehlt — lege sie an ..."
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo "Fehler: 'python3' ist nicht installiert."
+        exit 1
+    fi
+    python3 -m venv "$DIR/.venv"
+    echo "[setup] installiere Abhaengigkeiten (PySide6) ..."
+    "$VENV_PY" -m pip install -r "$DIR/requirements.txt"
+fi
+
+if [ ! -f "$APP" ]; then
+    echo "Fehler: main.py nicht gefunden ($APP)"
     exit 1
 fi
 
@@ -27,13 +44,6 @@ StartupNotify=true
 Keywords=mp3;musik;boombox;retro;
 EOF
 }
-
-if [ "${1:-}" = "--uninstall" ]; then
-    rm -f "$DESKTOP"
-    update-desktop-database "$APPS" 2>/dev/null || true
-    echo "Entfernt: $DESKTOP"
-    exit 0
-fi
 
 mkdir -p "$APPS"
 gen
